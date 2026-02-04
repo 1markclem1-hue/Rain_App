@@ -1,0 +1,1479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Logan – Daily Assignments + Timers</title>
+
+  <style>
+    :root{
+      /* DARK GREEN THEME */
+      --bg:#06140f;            /* deep green-black */
+      --card:#0b241b;          /* dark evergreen */
+      --card2:#0a1f18;
+      --text:#e8fff5;
+      --muted:#a7d3c3;
+      --line:rgba(232,255,245,.14);
+      --shadow: 0 12px 35px rgba(0,0,0,.45);
+      --radius:18px;
+      --radius2:14px;
+      --accent:#34d399;        /* green */
+      --accent2:#22c55e;       /* green */
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:
+        radial-gradient(1200px 700px at 18% 8%, rgba(34,197,94,.18), transparent 55%),
+        radial-gradient(900px 600px at 92% 26%, rgba(52,211,153,.14), transparent 55%),
+        var(--bg);
+      color:var(--text);
+    }
+
+    header{
+      padding:22px 18px 10px;
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .title{display:flex;flex-direction:column;gap:6px;}
+    h1{margin:0;font-size:22px;letter-spacing:.2px;}
+    .sub{color:var(--muted);font-size:13px;line-height:1.35;}
+    .top-controls{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;
+    }
+    .pill{
+      display:flex;gap:8px;align-items:center;padding:10px 12px;
+      background:rgba(232,255,245,.06);
+      border:1px solid var(--line);
+      border-radius:999px;
+      box-shadow:0 2px 18px rgba(0,0,0,.18);
+    }
+    .pill label{font-size:12px;color:var(--muted);user-select:none;}
+    input[type="date"]{
+      background:transparent;border:none;color:var(--text);font-size:13px;outline:none;
+    }
+
+    main{
+      max-width:1100px;margin:0 auto;padding:12px 18px 26px;
+      display:grid;grid-template-columns: 1.15fr .85fr;gap:14px;
+    }
+    @media (max-width: 980px){
+      main{grid-template-columns:1fr}
+      header{align-items:flex-start;flex-direction:column}
+      .top-controls{justify-content:flex-start}
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(232,255,245,.06), rgba(0,0,0,.10));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card .card-h{
+      padding:14px 14px 10px;border-bottom:1px solid var(--line);
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+    }
+    .card .card-h h2{margin:0;font-size:15px;letter-spacing:.2px;}
+    .card .card-h .small{color:var(--muted);font-size:12px;}
+    .card .card-b{padding:14px}
+
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    button{
+      border:none;border-radius:12px;padding:10px 12px;
+      background: rgba(232,255,245,.06);
+      border:1px solid rgba(232,255,245,.16);
+      color: var(--text);
+      cursor:pointer;font-weight:750;font-size:13px;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    button:hover{background: rgba(232,255,245,.09); border-color: rgba(232,255,245,.20);}
+    button:active{transform: translateY(1px);}
+    .primary{
+      background: linear-gradient(135deg, rgba(34,197,94,.25), rgba(52,211,153,.18));
+      border-color: rgba(232,255,245,.22);
+    }
+    .danger{background: rgba(251,113,133,.12);border-color: rgba(251,113,133,.28);}
+    .ghost{background: rgba(0,0,0,.18);}
+
+    .classes{display:flex;flex-direction:column;gap:10px;}
+    .row{
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(232,255,245,.12);
+      border-radius:var(--radius2);
+      padding:12px 12px 10px;
+    }
+    .row-top{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;
+    }
+    .row-title{
+      display:flex;flex-direction:column;gap:3px;min-width: 220px;
+    }
+    .row-title b{font-size:14px}
+    .row-title span{font-size:12px;color:var(--muted)}
+
+    .badges{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+    .badge{
+      font-size:11px;padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(232,255,245,.14);
+      background: rgba(232,255,245,.06);
+      color: var(--muted);
+      user-select:none;
+      display:flex;gap:6px;align-items:center;
+    }
+    .badge strong{font-weight:900;color:var(--text);font-size:11px}
+
+    .checks{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:10px;margin-bottom:10px;
+    }
+    @media (max-width: 520px){
+      .checks{grid-template-columns:1fr}
+      .row-title{min-width:auto}
+    }
+    .check{
+      display:flex;gap:10px;align-items:center;padding:10px 10px;
+      border-radius:12px;border:1px dashed rgba(232,255,245,.18);
+      background: rgba(232,255,245,.05);
+    }
+    .check input{transform: scale(1.2); accent-color: var(--accent);}
+    .check label{
+      display:flex;flex-direction:column;gap:2px;cursor:pointer;user-select:none;font-size:13px;
+    }
+    .check label small{color:var(--muted);font-size:11px}
+
+    textarea{
+      width:100%;resize:vertical;min-height:44px;max-height:140px;
+      padding:10px 10px;border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);outline:none;
+      font-size:13px;line-height:1.35;
+    }
+    textarea::placeholder{color:rgba(232,255,245,.45)}
+
+    /* Period timer per row */
+    .period-timer{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(232,255,245,.14);
+      background: rgba(0,0,0,.20);
+    }
+    .pt-left{display:flex;flex-direction:column;gap:4px;}
+    .pt-left b{font-size:12px}
+    .pt-left span{font-size:12px;color:var(--muted)}
+    .pt-time{font-weight:900;font-size:18px;letter-spacing:.4px;}
+    .pt-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+    .pt-btns button{padding:9px 10px;font-size:12px;border-radius:10px;}
+
+    /* Focus timer */
+    .timer-wrap{display:grid;gap:12px;}
+    .timer-face{
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(232,255,245,.14);
+      border-radius: var(--radius2);
+      padding:14px;
+      display:grid;
+      gap:10px;
+    }
+    .timebig{font-size:44px;font-weight:950;letter-spacing:.6px;text-align:center;line-height:1.0;}
+    .timersub{color:var(--muted);font-size:12px;text-align:center;line-height:1.4;}
+    .progress{height:10px;background: rgba(232,255,245,.08);border-radius:999px;overflow:hidden;border:1px solid rgba(232,255,245,.12);}
+    .bar{height:100%;width:0%;background: linear-gradient(90deg, rgba(34,197,94,.92), rgba(52,211,153,.92));transition: width .2s linear;}
+    .timer-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .timer-controls button{padding:12px 12px}
+    .presets{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+    .preset{padding:9px 10px;font-size:12px;border-radius:999px;}
+    .inputs{display:grid;grid-template-columns: 1fr 1fr 1fr;gap:10px;}
+    .inputs input{
+      width:100%;padding:10px 10px;border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    .inputs label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
+    .note{
+      font-size:12px;color:var(--muted);line-height:1.45;
+      background: rgba(232,255,245,.05);
+      border:1px solid rgba(232,255,245,.14);
+      border-radius: var(--radius2);
+      padding:10px 12px;
+    }
+
+    .toggle{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding:10px 12px;border-radius: var(--radius2);
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(232,255,245,.14);
+    }
+    .toggle span{font-size:12px;color:var(--muted)}
+    .switch{
+      width:44px;height:26px;border-radius:999px;position:relative;
+      background: rgba(232,255,245,.14);
+      border:1px solid rgba(232,255,245,.18);
+      cursor:pointer;
+    }
+    .knob{
+      position:absolute; top:3px; left:3px;
+      width:20px;height:20px;border-radius:999px;
+      background: rgba(232,255,245,.92);
+      transition: left .15s ease, background .15s ease;
+    }
+    .switch.on{ background: rgba(34,197,94,.22); border-color: rgba(34,197,94,.35);}
+    .switch.on .knob{ left:21px; background: rgba(34,197,94,.95);}
+
+    /* Share card */
+    .share-grid{display:grid;gap:10px;}
+    .share-grid .field{display:grid;gap:6px;}
+    .share-grid label{font-size:11px;color:var(--muted);}
+    .share-grid input{
+      width:100%;padding:10px 10px;border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    .share-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    @media (max-width: 520px){ .share-actions{grid-template-columns:1fr} }
+    .toast{
+      display:none;margin-top:10px;
+      padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(34,197,94,.35);
+      background: rgba(34,197,94,.12);
+      color: rgba(232,255,245,.95);
+      font-size:12px;line-height:1.4;
+    }
+    .toast.show{display:block;}
+
+    /* EOD */
+    .endcheck{display:grid;gap:10px;}
+    .endcheck .check{border-style:solid}
+    .sig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+    .sig input{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(232,255,245,.18);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+      font-size:13px;
+    }
+    .sig label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
+
+    /* Modal (Weekly Summary) */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.60);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:9999;
+    }
+    .modal-backdrop.show{display:flex;}
+    .modal{
+      width:min(980px, 100%);
+      background: rgba(9,29,22,.98);
+      border:1px solid rgba(232,255,245,.16);
+      border-radius:18px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.65);
+      overflow:hidden;
+    }
+    .modal-h{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(232,255,245,.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modal-h h3{margin:0;font-size:15px;}
+    .modal-b{padding:14px; display:grid; gap:12px;}
+    .modal-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 860px){ .modal-grid{grid-template-columns:1fr;} }
+    .panel{
+      border:1px solid rgba(232,255,245,.14);
+      border-radius:14px;
+      background: rgba(0,0,0,.22);
+      padding:12px;
+    }
+    .panel h4{margin:0 0 8px 0;font-size:13px;}
+    .panel p{margin:6px 0;color:rgba(232,255,245,.90);font-size:12px;line-height:1.45;}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      color: rgba(232,255,245,.92);
+    }
+    th, td{
+      border:1px solid rgba(232,255,245,.14);
+      padding:8px 8px;
+      vertical-align:top;
+    }
+    th{background: rgba(232,255,245,.06); text-align:left;}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;}
+
+    .footer{
+      max-width:1100px;margin:0 auto;padding:0 18px 22px;
+      color:rgba(232,255,245,.60);
+      font-size:11px;line-height:1.45;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      padding:2px 6px;border-radius:6px;
+      border:1px solid rgba(232,255,245,.14);
+      background: rgba(0,0,0,.28);
+      color: rgba(232,255,245,.88);
+    }
+
+    /* PRINT LAYOUT (mirrors intervention form) */
+    .print-form{
+      display:none;
+      color:#000;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .print-page{ padding:14mm; }
+    .pf-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10mm;
+      margin-bottom:6mm;
+    }
+    .pf-title{
+      font-weight:700;
+      font-size:14pt;
+      line-height:1.2;
+    }
+    .pf-sub{ font-size:10.5pt; margin-top:2mm; }
+    .pf-field{
+      font-size:11pt;
+      border:1px solid #000;
+      padding:2mm 3mm;
+      min-width: 62mm;
+      text-align:left;
+    }
+    .pf-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:10.5pt;
+      margin-top:4mm;
+    }
+    .pf-table th, .pf-table td{
+      border:1px solid #000;
+      padding:3mm 2.5mm;
+      vertical-align:top;
+    }
+    .pf-table th{background:#f0f0f0}
+    .pf-check{width:18mm; text-align:center;}
+    .pf-assign{width:auto;}
+    .pf-time{width:25mm; text-align:center;}
+    .pf-eod{
+      margin-top:6mm;
+      border:1px solid #000;
+      padding:3mm;
+      font-size:10.5pt;
+    }
+    .pf-sigs{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:6mm;
+      margin-top:6mm;
+      font-size:10.5pt;
+    }
+    .pf-line{ border-bottom:1px solid #000; height:9mm; }
+
+    @media print{
+      body{background:#fff;}
+      header, main, .footer{display:none !important;}
+      .print-form{display:block !important;}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="title">
+    <h1>Logan’s Daily Assignments</h1>
+    <div class="sub">Checklist + timers + share + print-to-PDF + weekly IEP summary.</div>
+  </div>
+
+  <div class="top-controls">
+    <div class="pill" title="Pick today’s date">
+      <label for="date">DATE</label>
+      <input id="date" type="date" />
+    </div>
+    <div class="btnbar">
+      <button class="primary" id="saveBtn" type="button">Save</button>
+      <button id="printBtn" type="button">Print (Simple)</button>
+      <button class="primary" id="printFormBtn" type="button">Print Form (PDF)</button>
+      <button id="weeklyBtn" type="button">Weekly Summary</button>
+      <button class="danger" id="clearBtn" type="button">Clear Day</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card" aria-label="Daily assignments checklist">
+    <div class="card-h">
+      <h2>Class Schedule + Checklist</h2>
+      <div class="small">Done • Submitted • Needs Help</div>
+    </div>
+    <div class="card-b">
+      <div class="classes" id="classes"></div>
+    </div>
+  </section>
+
+  <aside class="card" aria-label="Timer and end-of-day check">
+    <div class="card-h">
+      <h2>Timers + Share</h2>
+      <div class="small">Time awareness & accountability</div>
+    </div>
+    <div class="card-b">
+      <div class="timer-wrap">
+
+        <div class="timer-face">
+          <div class="timebig" id="timeBig">00:00</div>
+          <div class="timersub" id="timerLabel">Set a timer, then press Start.</div>
+          <div class="progress"><div class="bar" id="bar"></div></div>
+
+          <div class="presets">
+            <button class="preset" type="button" data-min="3">3 min</button>
+            <button class="preset" type="button" data-min="5">5 min</button>
+            <button class="preset" type="button" data-min="10">10 min</button>
+            <button class="preset" type="button" data-min="15">15 min</button>
+            <button class="preset" type="button" data-min="20">20 min</button>
+          </div>
+
+          <div class="inputs">
+            <div>
+              <label for="mins">Minutes</label>
+              <input id="mins" type="number" min="0" max="180" value="5" />
+            </div>
+            <div>
+              <label for="secs">Seconds</label>
+              <input id="secs" type="number" min="0" max="59" value="0" />
+            </div>
+            <div>
+              <label for="purpose">What am I working on?</label>
+              <input id="purpose" type="text" placeholder="Example: Geometry homework" />
+            </div>
+          </div>
+
+          <div class="timer-controls">
+            <button class="primary" id="startPauseBtn" type="button">Start</button>
+            <button id="resetBtn" type="button">Reset</button>
+          </div>
+
+          <div class="toggle">
+            <div>
+              <div style="font-weight:900;font-size:13px;">Gentle reminders</div>
+              <span>Beep at halfway + last 10 seconds</span>
+            </div>
+            <div class="switch on" id="reminderSwitch" role="switch" aria-checked="true" tabindex="0">
+              <div class="knob"></div>
+            </div>
+          </div>
+
+          <div class="note">
+            Tip: Start the timer and say: <b>“I’m working on ____ for ____ minutes.”</b>
+          </div>
+        </div>
+
+        <section class="card" style="box-shadow:none;">
+          <div class="card-h">
+            <h2>Share / Email to Case Manager</h2>
+            <div class="small">Creates an email draft</div>
+          </div>
+          <div class="card-b">
+            <div class="share-grid">
+              <div class="field">
+                <label for="caseEmail">Case Manager Email</label>
+                <input id="caseEmail" type="email" placeholder="case.manager@school.org" />
+              </div>
+              <div class="field">
+                <label for="ccEmail">CC (your email)</label>
+                <input id="ccEmail" type="email" />
+              </div>
+              <div class="share-actions">
+                <button class="primary" id="emailBtn" type="button">Share/Email</button>
+                <button id="copyBtn" type="button">Copy Summary</button>
+              </div>
+              <div class="toast" id="toast">Copied! Paste into an email or Google Classroom message.</div>
+              <div class="note">For documentation: email the summary at the end of the day.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="box-shadow:none;">
+          <div class="card-h">
+            <h2>END-OF-DAY CHECK</h2>
+            <div class="small">Quick reflection</div>
+          </div>
+          <div class="card-b">
+            <div class="endcheck">
+              <div class="check">
+                <input id="eod_finished" type="checkbox">
+                <label for="eod_finished">I know what I finished</label>
+              </div>
+              <div class="check">
+                <input id="eod_turned" type="checkbox">
+                <label for="eod_turned">I know what I turned in</label>
+              </div>
+              <div class="check">
+                <input id="eod_still" type="checkbox">
+                <label for="eod_still">I know what I still need to do</label>
+              </div>
+            </div>
+
+            <div class="sig">
+              <div>
+                <label for="sig_student">Student Signature</label>
+                <input id="sig_student" type="text" placeholder="Logan" />
+              </div>
+              <div>
+                <label for="sig_adult">Adult Signature</label>
+                <input id="sig_adult" type="text" placeholder="Teacher / Case Manager" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="footer">
+  Tip: Print Form → choose <span class="kbd">Save as PDF</span> to save a documentation copy.
+</div>
+
+<!-- PRINT-ONLY FORM -->
+<section class="print-form" id="printForm">
+  <div class="print-page">
+    <div class="pf-top">
+      <div>
+        <div class="pf-title">Logan’s Daily Assignments</div>
+        <div class="pf-sub">Student: <span id="pfStudentName"></span></div>
+      </div>
+      <div class="pf-field">DATE: <span id="pfDate"></span></div>
+    </div>
+
+    <table class="pf-table">
+      <thead>
+        <tr>
+          <th style="width:24mm;">Class</th>
+          <th class="pf-assign">Assignment</th>
+          <th class="pf-check">Done?</th>
+          <th class="pf-check">Submitted?</th>
+          <th class="pf-check">Needs Help?</th>
+          <th class="pf-time">Time</th>
+        </tr>
+      </thead>
+      <tbody id="pfRows"></tbody>
+    </table>
+
+    <div class="pf-eod">
+      <b>END-OF-DAY CHECK</b><br>
+      ☐ I know what I finished &nbsp;&nbsp;
+      ☐ I know what I turned in &nbsp;&nbsp;
+      ☐ I know what I still need to do
+    </div>
+
+    <div class="pf-sigs">
+      <div>
+        <div>Student Signature:</div>
+        <div class="pf-line"></div>
+      </div>
+      <div>
+        <div>Adult Signature:</div>
+        <div class="pf-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Weekly Summary Modal -->
+<div class="modal-backdrop" id="weeklyModalBackdrop" role="dialog" aria-modal="true" aria-label="Weekly Summary">
+  <div class="modal">
+    <div class="modal-h">
+      <h3 id="weeklyTitle">Weekly Summary</h3>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+        <button id="weeklyCopyBtn" type="button">Copy Weekly Notes</button>
+        <button id="weeklyPrintBtn" type="button">Print Weekly</button>
+        <button class="danger" id="weeklyCloseBtn" type="button">Close</button>
+      </div>
+    </div>
+    <div class="modal-b">
+      <div class="modal-grid">
+        <div class="panel">
+          <h4>Week Range</h4>
+          <p><b>Start (Mon):</b> <span class="mono" id="weekStart"></span></p>
+          <p><b>End (Fri):</b> <span class="mono" id="weekEnd"></span></p>
+          <p><b>Days found:</b> <span class="mono" id="daysFound"></span></p>
+        </div>
+
+        <div class="panel">
+          <h4>IEP Progress Monitoring Snapshot</h4>
+          <p id="iepSnapshot"></p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4>Weekly Totals by Class</h4>
+        <div style="overflow:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Days w/ Data</th>
+                <th>Done</th>
+                <th>Submitted</th>
+                <th>Needs Help</th>
+                <th>Total Time (hh:mm:ss)</th>
+              </tr>
+            </thead>
+            <tbody id="weeklyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4>Weekly Notes (copy/paste)</h4>
+        <pre id="weeklyNotes" style="white-space:pre-wrap; margin:0; font-size:12px; line-height:1.45; color:rgba(232,255,245,.94);"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // Logan's classes (from intervention plan)
+  const CLASS_LIST = [
+    { period: 1, name: "Art 2" },
+    { period: 2, name: "PE" },
+    { period: 3, name: "Computer Graphics" },
+    { period: 4, name: "Biology" },
+    { period: 5, name: "Geometry" },
+    { period: 6, name: "English 2" },
+    { period: 7, name: "CSC 105" },
+  ];
+
+  // Unique storage prefix for Logan (so it doesn't collide with Josh)
+  const LS_PREFIX = "logan_daily_v1:";
+
+  // Elements
+  const classesEl = document.getElementById("classes");
+  const dateEl = document.getElementById("date");
+  const saveBtn = document.getElementById("saveBtn");
+  const printBtn = document.getElementById("printBtn");
+  const printFormBtn = document.getElementById("printFormBtn");
+  const weeklyBtn = document.getElementById("weeklyBtn");
+  const clearBtn = document.getElementById("clearBtn");
+
+  // Focus timer
+  const timeBig = document.getElementById("timeBig");
+  const timerLabel = document.getElementById("timerLabel");
+  const bar = document.getElementById("bar");
+  const minsEl = document.getElementById("mins");
+  const secsEl = document.getElementById("secs");
+  const purposeEl = document.getElementById("purpose");
+  const startPauseBtn = document.getElementById("startPauseBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const reminderSwitch = document.getElementById("reminderSwitch");
+
+  // Share/email
+  const caseEmailEl = document.getElementById("caseEmail");
+  const ccEmailEl = document.getElementById("ccEmail");
+  const emailBtn = document.getElementById("emailBtn");
+  const copyBtn = document.getElementById("copyBtn");
+  const toast = document.getElementById("toast");
+
+  // EOD
+  const eod_finished = document.getElementById("eod_finished");
+  const eod_turned = document.getElementById("eod_turned");
+  const eod_still = document.getElementById("eod_still");
+  const sig_student = document.getElementById("sig_student");
+  const sig_adult = document.getElementById("sig_adult");
+
+  // Print form
+  const pfStudentName = document.getElementById("pfStudentName");
+  const pfDate = document.getElementById("pfDate");
+  const pfRows = document.getElementById("pfRows");
+
+  // Weekly modal
+  const weeklyModalBackdrop = document.getElementById("weeklyModalBackdrop");
+  const weeklyCloseBtn = document.getElementById("weeklyCloseBtn");
+  const weeklyCopyBtn = document.getElementById("weeklyCopyBtn");
+  const weeklyPrintBtn = document.getElementById("weeklyPrintBtn");
+  const weeklyTitle = document.getElementById("weeklyTitle");
+  const weekStartEl = document.getElementById("weekStart");
+  const weekEndEl = document.getElementById("weekEnd");
+  const daysFoundEl = document.getElementById("daysFound");
+  const iepSnapshotEl = document.getElementById("iepSnapshot");
+  const weeklyTableBody = document.getElementById("weeklyTableBody");
+  const weeklyNotesEl = document.getElementById("weeklyNotes");
+
+  // Helpers
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const clampInt = (v, lo, hi) => {
+    const n = Number.parseInt(v, 10);
+    if (Number.isNaN(n)) return lo;
+    return Math.max(lo, Math.min(hi, n));
+  };
+  const formatMMSS = (totalSeconds) => {
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${pad2(m)}:${pad2(s)}`;
+  };
+  const formatHMS = (totalSeconds) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    return `${h}:${pad2(m)}:${pad2(s)}`;
+  };
+  const ymd = (d) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+  const fromYMD = (s) => {
+    const [Y,M,D] = (s || "").split("-").map(Number);
+    if(!Y || !M || !D) return null;
+    return new Date(Y, M-1, D, 12, 0, 0);
+  };
+  function beep(freq = 880, ms = 90, vol = 0.08){
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "sine";
+      o.frequency.value = freq;
+      g.gain.value = vol;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => { o.stop(); ctx.close(); }, ms);
+    }catch(e){}
+  }
+
+  // Storage
+  const keyForDate = (dateStr) => LS_PREFIX + (dateStr || "no-date");
+  function getSelectedKey(){ return keyForDate(dateEl.value || "no-date"); }
+
+  // Period timers
+  const periodTimers = {};
+  let activePeriod = null;
+  let ptIntervalId = null;
+
+  function initPeriodTimers(){
+    CLASS_LIST.forEach(c => { periodTimers[c.period] = { elapsed: 0, running: false }; });
+  }
+  function stopActivePeriodTimer(){
+    if(ptIntervalId){ clearInterval(ptIntervalId); ptIntervalId = null; }
+    if(activePeriod !== null){
+      periodTimers[activePeriod].running = false;
+      activePeriod = null;
+    }
+  }
+  function startPeriodTimer(period){
+    stopActivePeriodTimer();
+    activePeriod = period;
+    periodTimers[period].running = true;
+    ptIntervalId = setInterval(() => {
+      periodTimers[period].elapsed += 1;
+      renderPeriodTimer(period);
+      autoSaveQuiet();
+    }, 1000);
+    renderAllPeriodTimers();
+    beep(660, 70, 0.04);
+  }
+  function pausePeriodTimer(period){
+    if(activePeriod === period) stopActivePeriodTimer();
+    periodTimers[period].running = false;
+    renderAllPeriodTimers();
+    autoSaveQuiet();
+  }
+  function resetPeriodTimer(period){
+    if(activePeriod === period) stopActivePeriodTimer();
+    periodTimers[period].elapsed = 0;
+    periodTimers[period].running = false;
+    renderAllPeriodTimers();
+    autoSaveQuiet();
+  }
+  function renderPeriodTimer(period){
+    const timeEl = document.getElementById(`pt_time_${period}`);
+    const btnEl = document.getElementById(`pt_btn_${period}`);
+    const statusEl = document.getElementById(`pt_status_${period}`);
+    if(timeEl) timeEl.textContent = formatHMS(periodTimers[period].elapsed);
+    const isRunning = periodTimers[period].running;
+    if(btnEl) btnEl.textContent = isRunning ? "Pause" : "Start";
+    if(statusEl) statusEl.textContent = isRunning ? "Running now" : "Not running";
+  }
+  function renderAllPeriodTimers(){ CLASS_LIST.forEach(c => renderPeriodTimer(c.period)); }
+
+  // Build class rows
+  function makeClassRow(c){
+    const idBase = `c${c.period}`;
+    const row = document.createElement("div");
+    row.className = "row";
+
+    row.innerHTML = `
+      <div class="row-top">
+        <div class="row-title">
+          <b>Class ${c.period}: ${c.name}</b>
+          <span>Write the assignment and check boxes.</span>
+        </div>
+        <div class="badges">
+          <div class="badge" data-badge="done">✅ <strong>Done</strong></div>
+          <div class="badge" data-badge="submitted">📤 <strong>Submitted</strong></div>
+          <div class="badge" data-badge="help">🆘 <strong>Needs Help</strong></div>
+        </div>
+      </div>
+
+      <div class="checks">
+        <div class="check">
+          <input id="${idBase}_done" type="checkbox" />
+          <label for="${idBase}_done">Done in class?<small>Finished during class?</small></label>
+        </div>
+        <div class="check">
+          <input id="${idBase}_submitted" type="checkbox" />
+          <label for="${idBase}_submitted">Submitted?<small>Turned in / uploaded?</small></label>
+        </div>
+        <div class="check">
+          <input id="${idBase}_help" type="checkbox" />
+          <label for="${idBase}_help">Needs help?<small>If stuck, check now.</small></label>
+        </div>
+      </div>
+
+      <textarea id="${idBase}_note" placeholder="Assignment / notes"></textarea>
+
+      <div class="period-timer">
+        <div class="pt-left">
+          <b>Class-period timer</b>
+          <span id="pt_status_${c.period}">Not running</span>
+        </div>
+        <div class="pt-time" id="pt_time_${c.period}">0:00:00</div>
+        <div class="pt-btns">
+          <button class="primary" id="pt_btn_${c.period}" type="button">Start</button>
+          <button class="ghost" id="pt_reset_${c.period}" type="button">Reset</button>
+        </div>
+      </div>
+    `;
+
+    // Badge tinting
+    const done = row.querySelector(`#${idBase}_done`);
+    const submitted = row.querySelector(`#${idBase}_submitted`);
+    const help = row.querySelector(`#${idBase}_help`);
+    const badgeDone = row.querySelector(`[data-badge="done"]`);
+    const badgeSub = row.querySelector(`[data-badge="submitted"]`);
+    const badgeHelp = row.querySelector(`[data-badge="help"]`);
+
+    const updateBadges = () => {
+      badgeDone.style.borderColor = done.checked ? "rgba(34,197,94,.55)" : "rgba(232,255,245,.14)";
+      badgeDone.style.background  = done.checked ? "rgba(34,197,94,.12)" : "rgba(232,255,245,.06)";
+
+      badgeSub.style.borderColor  = submitted.checked ? "rgba(52,211,153,.55)" : "rgba(232,255,245,.14)";
+      badgeSub.style.background   = submitted.checked ? "rgba(52,211,153,.12)" : "rgba(232,255,245,.06)";
+
+      badgeHelp.style.borderColor = help.checked ? "rgba(251,113,133,.60)" : "rgba(232,255,245,.14)";
+      badgeHelp.style.background  = help.checked ? "rgba(251,113,133,.12)" : "rgba(232,255,245,.06)";
+    };
+    [done, submitted, help].forEach(cb => cb.addEventListener("change", updateBadges));
+    updateBadges();
+
+    // Period timer buttons
+    row.querySelector(`#pt_btn_${c.period}`).addEventListener("click", () => {
+      const isRunning = periodTimers[c.period]?.running;
+      if(isRunning) pausePeriodTimer(c.period);
+      else startPeriodTimer(c.period);
+    });
+    row.querySelector(`#pt_reset_${c.period}`).addEventListener("click", () => resetPeriodTimer(c.period));
+
+    renderPeriodTimer(c.period);
+    return row;
+  }
+
+  function buildRows(){
+    classesEl.innerHTML = "";
+    CLASS_LIST.forEach(c => classesEl.appendChild(makeClassRow(c)));
+  }
+
+  // Collect/apply day data
+  function collectData(){
+    const classes = CLASS_LIST.map(c => {
+      const idBase = `c${c.period}`;
+      return {
+        period: c.period,
+        name: c.name,
+        done: document.getElementById(`${idBase}_done`).checked,
+        submitted: document.getElementById(`${idBase}_submitted`).checked,
+        help: document.getElementById(`${idBase}_help`).checked,
+        note: document.getElementById(`${idBase}_note`).value || "",
+        periodTimerSeconds: periodTimers[c.period]?.elapsed || 0
+      };
+    });
+    return {
+      date: dateEl.value || "",
+      classes,
+      eod: {
+        finished: eod_finished.checked,
+        turned: eod_turned.checked,
+        still: eod_still.checked,
+        sig_student: sig_student.value || "",
+        sig_adult: sig_adult.value || ""
+      },
+      timer: {
+        mins: clampInt(minsEl.value, 0, 180),
+        secs: clampInt(secsEl.value, 0, 59),
+        purpose: purposeEl.value || "",
+        reminders: reminderSwitch.classList.contains("on"),
+      },
+      share: {
+        caseEmail: caseEmailEl.value || "",
+        ccEmail: ccEmailEl.value || ""
+      }
+    };
+  }
+
+  function applyData(data){
+    if(!data) return;
+    dateEl.value = data.date || dateEl.value;
+
+    (data.classes || []).forEach(item => {
+      if(periodTimers[item.period]){
+        periodTimers[item.period].elapsed = clampInt(item.periodTimerSeconds || 0, 0, 999999);
+        periodTimers[item.period].running = false;
+      }
+    });
+
+    (data.classes || []).forEach(item => {
+      const idBase = `c${item.period}`;
+      const doneEl = document.getElementById(`${idBase}_done`);
+      const subEl  = document.getElementById(`${idBase}_submitted`);
+      const helpEl = document.getElementById(`${idBase}_help`);
+      const noteEl = document.getElementById(`${idBase}_note`);
+      if(doneEl) doneEl.checked = !!item.done;
+      if(subEl)  subEl.checked  = !!item.submitted;
+      if(helpEl) helpEl.checked = !!item.help;
+      if(noteEl) noteEl.value   = item.note || "";
+      doneEl && doneEl.dispatchEvent(new Event("change"));
+      subEl && subEl.dispatchEvent(new Event("change"));
+      helpEl && helpEl.dispatchEvent(new Event("change"));
+    });
+
+    const e = data.eod || {};
+    eod_finished.checked = !!e.finished;
+    eod_turned.checked   = !!e.turned;
+    eod_still.checked    = !!e.still;
+    sig_student.value    = e.sig_student || "";
+    sig_adult.value      = e.sig_adult || "";
+
+    const t = data.timer || {};
+    minsEl.value = (typeof t.mins === "number") ? t.mins : minsEl.value;
+    secsEl.value = (typeof t.secs === "number") ? t.secs : secsEl.value;
+    purposeEl.value = t.purpose || "";
+    const remindersOn = (t.reminders !== false);
+    reminderSwitch.classList.toggle("on", remindersOn);
+    reminderSwitch.setAttribute("aria-checked", String(remindersOn));
+
+    const s = data.share || {};
+    caseEmailEl.value = s.caseEmail || caseEmailEl.value;
+    ccEmailEl.value = s.ccEmail || ccEmailEl.value;
+
+    stopActivePeriodTimer();
+    renderAllPeriodTimers();
+  }
+
+  function save(loud=true){
+    localStorage.setItem(getSelectedKey(), JSON.stringify(collectData()));
+    if(loud) beep(660, 70, 0.04);
+  }
+  function autoSaveQuiet(){
+    localStorage.setItem(getSelectedKey(), JSON.stringify(collectData()));
+  }
+  function load(){
+    const raw = localStorage.getItem(getSelectedKey());
+    if(!raw) return;
+    try{ applyData(JSON.parse(raw)); }catch(e){}
+  }
+  function clearDay(){
+    stopActivePeriodTimer();
+    localStorage.removeItem(getSelectedKey());
+    initPeriodTimers();
+    buildRows();
+    eod_finished.checked = false;
+    eod_turned.checked = false;
+    eod_still.checked = false;
+    sig_student.value = "";
+    sig_adult.value = "";
+    resetTimer(true);
+    toast.classList.remove("show");
+  }
+
+  // Focus timer
+  let intervalId = null;
+  let totalStartSeconds = 0;
+  let remainingSeconds = 0;
+  let isRunning = false;
+  let remindersOn = true;
+  let halfwayBeeped = false;
+
+  function readTimerInputs(){
+    return clampInt(minsEl.value, 0, 180) * 60 + clampInt(secsEl.value, 0, 59);
+  }
+  function setTimerFromInputs(){
+    const total = readTimerInputs();
+    totalStartSeconds = total;
+    remainingSeconds = total;
+    halfwayBeeped = false;
+    renderTimer();
+  }
+  function renderTimer(){
+    timeBig.textContent = formatMMSS(Math.max(0, remainingSeconds));
+    const pct = (totalStartSeconds > 0)
+      ? ((totalStartSeconds - remainingSeconds) / totalStartSeconds) * 100
+      : 0;
+    bar.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+    const purpose = (purposeEl.value || "").trim();
+    timerLabel.textContent = isRunning
+      ? (purpose ? `Working on: ${purpose}` : "Working… keep going.")
+      : (purpose ? `Ready for: ${purpose}` : "Set a timer, then press Start.");
+  }
+  function tick(){
+    if(remainingSeconds <= 0){
+      stopTimer();
+      bar.style.width = "100%";
+      timeBig.textContent = "00:00";
+      timerLabel.textContent = "Time! ✅ Check your work.";
+      beep(880, 120, 0.08);
+      setTimeout(() => beep(660, 140, 0.08), 180);
+      return;
+    }
+    remainingSeconds -= 1;
+
+    if(remindersOn && totalStartSeconds > 0){
+      const halfway = Math.floor(totalStartSeconds / 2);
+      if(!halfwayBeeped && remainingSeconds === (totalStartSeconds - halfway)){
+        halfwayBeeped = true; beep(520, 90, 0.05);
+      }
+      if(remainingSeconds <= 10 && remainingSeconds > 0){
+        beep(700, 50, 0.05);
+      }
+    }
+    renderTimer();
+  }
+  function startTimer(){
+    if(isRunning) return;
+    if(remainingSeconds <= 0) setTimerFromInputs();
+    if(totalStartSeconds <= 0){
+      setTimerFromInputs();
+      if(totalStartSeconds <= 0){
+        timerLabel.textContent = "Add minutes or seconds first.";
+        return;
+      }
+    }
+    isRunning = true;
+    startPauseBtn.textContent = "Pause";
+    renderTimer();
+    intervalId = setInterval(tick, 1000);
+  }
+  function stopTimer(){
+    isRunning = false;
+    startPauseBtn.textContent = "Start";
+    if(intervalId) clearInterval(intervalId);
+    intervalId = null;
+    renderTimer();
+  }
+  function resetTimer(quiet=false){
+    stopTimer();
+    setTimerFromInputs();
+    timerLabel.textContent = "Set a timer, then press Start.";
+    if(!quiet) beep(420, 70, 0.04);
+  }
+  function toggleStartPause(){ isRunning ? stopTimer() : startTimer(); }
+
+  function setReminders(on){
+    remindersOn = !!on;
+    reminderSwitch.classList.toggle("on", remindersOn);
+    reminderSwitch.setAttribute("aria-checked", String(remindersOn));
+    save(false);
+  }
+
+  // Share summary
+  function buildDailySummaryText(){
+    const date = dateEl.value || "(no date)";
+    const studentSig = (sig_student.value || "").trim();
+    const adultSig = (sig_adult.value || "").trim();
+
+    const lines = [];
+    lines.push(`Logan – Daily Assignment Summary`);
+    lines.push(`Date: ${date}`);
+    lines.push(``);
+
+    CLASS_LIST.forEach(c => {
+      const idBase = `c${c.period}`;
+      const done = document.getElementById(`${idBase}_done`).checked;
+      const submitted = document.getElementById(`${idBase}_submitted`).checked;
+      const help = document.getElementById(`${idBase}_help`).checked;
+      const note = (document.getElementById(`${idBase}_note`).value || "").trim();
+      const t = periodTimers[c.period]?.elapsed || 0;
+
+      lines.push(`Class ${c.period}: ${c.name}`);
+      lines.push(`- Status: ${done ? "Done" : "Not done"} | ${submitted ? "Submitted" : "Not submitted"} | ${help ? "Needs help" : "No help flagged"}`);
+      lines.push(`- Time (class timer): ${formatHMS(t)}`);
+      if(note) lines.push(`- Notes: ${note}`);
+      lines.push(``);
+    });
+
+    lines.push(`End-of-day check:`);
+    lines.push(`- I know what I finished: ${eod_finished.checked ? "Yes" : "No"}`);
+    lines.push(`- I know what I turned in: ${eod_turned.checked ? "Yes" : "No"}`);
+    lines.push(`- I know what I still need to do: ${eod_still.checked ? "Yes" : "No"}`);
+    lines.push(``);
+
+    if(studentSig || adultSig){
+      lines.push(`Signatures:`);
+      if(studentSig) lines.push(`- Student: ${studentSig}`);
+      if(adultSig) lines.push(`- Adult: ${adultSig}`);
+      lines.push(``);
+    }
+    lines.push(`(Generated from Logan’s checklist app)`);
+    return lines.join("\n");
+  }
+
+  function openEmailDraft(){
+    save(false);
+    const to = (caseEmailEl.value || "").trim();
+    const cc = (ccEmailEl.value || "").trim();
+    if(!to){ alert("Please enter the Case Manager Email first."); return; }
+    const subject = `Logan – Daily Assignments Summary (${dateEl.value || "no date"})`;
+    const body = buildDailySummaryText();
+    const params = new URLSearchParams();
+    params.set("subject", subject);
+    params.set("body", body);
+    if(cc) params.set("cc", cc);
+    window.location.href = `mailto:${encodeURIComponent(to)}?${params.toString()}`;
+  }
+
+  async function copyDailySummary(){
+    save(false);
+    const txt = buildDailySummaryText();
+    try{
+      await navigator.clipboard.writeText(txt);
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
+      beep(520, 70, 0.04);
+    }catch(e){
+      window.prompt("Copy this summary:", txt);
+    }
+  }
+
+  // Print form (PDF)
+  function escapeHtml(str){
+    return (str || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;")
+      .replaceAll("\n", "<br>");
+  }
+  function buildPrintForm(){
+    const name = (sig_student.value || "Logan").trim() || "Logan";
+    pfStudentName.textContent = name;
+    pfDate.textContent = dateEl.value || "";
+
+    pfRows.innerHTML = "";
+    CLASS_LIST.forEach(c => {
+      const idBase = `c${c.period}`;
+      const note = (document.getElementById(`${idBase}_note`).value || "").trim();
+      const done = document.getElementById(`${idBase}_done`).checked;
+      const submitted = document.getElementById(`${idBase}_submitted`).checked;
+      const help = document.getElementById(`${idBase}_help`).checked;
+      const t = periodTimers[c.period]?.elapsed || 0;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>Class ${c.period}<br><span style="font-size:9.5pt;">${c.name}</span></td>
+        <td>${escapeHtml(note)}</td>
+        <td class="pf-check">${done ? "✓" : ""}</td>
+        <td class="pf-check">${submitted ? "✓" : ""}</td>
+        <td class="pf-check">${help ? "✓" : ""}</td>
+        <td class="pf-time">${formatHMS(t)}</td>
+      `;
+      pfRows.appendChild(tr);
+    });
+  }
+  function printFormPDF(){
+    save(false);
+    buildPrintForm();
+    window.print();
+  }
+
+  // Weekly summary
+  function getWeekRangeFor(dateStr){
+    const d = fromYMD(dateStr) || new Date();
+    const day = d.getDay(); // 0=Sun..6=Sat
+    const diffToMon = (day === 0) ? -6 : (1 - day);
+    const mon = new Date(d); mon.setDate(d.getDate() + diffToMon);
+    const fri = new Date(mon); fri.setDate(mon.getDate() + 4);
+    return { mon: ymd(mon), fri: ymd(fri) };
+  }
+  function listAllSavedDays(){
+    const out = [];
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith(LS_PREFIX)){
+        const dateStr = k.replace(LS_PREFIX, "");
+        if(/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) out.push(dateStr);
+      }
+    }
+    return out.sort();
+  }
+  function loadDay(dateStr){
+    const raw = localStorage.getItem(keyForDate(dateStr));
+    if(!raw) return null;
+    try{ return JSON.parse(raw); }catch(e){ return null; }
+  }
+
+  function openWeeklySummary(){
+    save(false);
+
+    const range = getWeekRangeFor(dateEl.value || ymd(new Date()));
+    const start = range.mon;
+    const end = range.fri;
+
+    weeklyTitle.textContent = `Weekly Summary (${start} to ${end})`;
+    weekStartEl.textContent = start;
+    weekEndEl.textContent = end;
+
+    const all = listAllSavedDays();
+    const inRange = all.filter(d => d >= start && d <= end);
+
+    const agg = {};
+    CLASS_LIST.forEach(c => {
+      agg[c.period] = { name: c.name, days: new Set(), done: 0, submitted: 0, help: 0, time: 0 };
+    });
+
+    let totalDone=0, totalSubmitted=0, totalHelp=0, totalTime=0, totalClassEntries=0;
+
+    inRange.forEach(dateStr => {
+      const day = loadDay(dateStr);
+      if(!day || !Array.isArray(day.classes)) return;
+      day.classes.forEach(item => {
+        const p = item.period;
+        if(!agg[p]) return;
+        agg[p].days.add(dateStr);
+        agg[p].done += item.done ? 1 : 0;
+        agg[p].submitted += item.submitted ? 1 : 0;
+        agg[p].help += item.help ? 1 : 0;
+        agg[p].time += clampInt(item.periodTimerSeconds || 0, 0, 999999);
+
+        totalDone += item.done ? 1 : 0;
+        totalSubmitted += item.submitted ? 1 : 0;
+        totalHelp += item.help ? 1 : 0;
+        totalTime += clampInt(item.periodTimerSeconds || 0, 0, 999999);
+        totalClassEntries += 1;
+      });
+    });
+
+    daysFoundEl.textContent = String(inRange.length);
+
+    weeklyTableBody.innerHTML = "";
+    CLASS_LIST.forEach(c => {
+      const a = agg[c.period];
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><b>Class ${c.period}</b><br><span style="color:rgba(232,255,245,.75)">${a.name}</span></td>
+        <td>${a.days.size}</td>
+        <td>${a.done}</td>
+        <td>${a.submitted}</td>
+        <td>${a.help}</td>
+        <td class="mono">${formatHMS(a.time)}</td>
+      `;
+      weeklyTableBody.appendChild(tr);
+    });
+
+    const doneRate = totalClassEntries ? Math.round((totalDone / totalClassEntries)*100) : 0;
+    const submittedRate = totalClassEntries ? Math.round((totalSubmitted / totalClassEntries)*100) : 0;
+
+    iepSnapshotEl.innerHTML = `
+      <b>Completion:</b> ${doneRate}% of class tasks marked “Done”.<br>
+      <b>Submission:</b> ${submittedRate}% of class tasks marked “Submitted”.<br>
+      <b>Help-seeking:</b> ${totalHelp} “Needs Help” flags across the week.<br>
+      <b>Time on task:</b> ${formatHMS(totalTime)} tracked across class timers.
+    `;
+
+    const notesLines = [];
+    notesLines.push(`WEEKLY PROGRESS MONITORING – Logan`);
+    notesLines.push(`Week: ${start} to ${end}`);
+    notesLines.push(`Days with data: ${inRange.length}`);
+    notesLines.push(``);
+    notesLines.push(`Overall:`);
+    notesLines.push(`- Done checks: ${totalDone} (approx ${doneRate}% of entries)`);
+    notesLines.push(`- Submitted checks: ${totalSubmitted} (approx ${submittedRate}% of entries)`);
+    notesLines.push(`- Needs Help checks: ${totalHelp}`);
+    notesLines.push(`- Total tracked class time: ${formatHMS(totalTime)}`);
+    notesLines.push(``);
+    notesLines.push(`By class:`);
+    CLASS_LIST.forEach(c => {
+      const a = agg[c.period];
+      notesLines.push(`- Class ${c.period} (${a.name}): Done ${a.done}, Submitted ${a.submitted}, Help ${a.help}, Time ${formatHMS(a.time)}`);
+    });
+    notesLines.push(``);
+    notesLines.push(`Instructional note (optional): Logan benefited from structured check-ins, explicit completion confirmation, and timed work intervals to support attention and follow-through.`);
+    weeklyNotesEl.textContent = notesLines.join("\n");
+
+    weeklyModalBackdrop.classList.add("show");
+  }
+
+  async function copyWeeklyNotes(){
+    const txt = weeklyNotesEl.textContent || "";
+    try{
+      await navigator.clipboard.writeText(txt);
+      beep(520, 70, 0.04);
+    }catch(e){
+      window.prompt("Copy weekly notes:", txt);
+    }
+  }
+
+  function printWeekly(){
+    const w = window.open("", "_blank");
+    if(!w){ alert("Pop-up blocked. Allow pop-ups to print weekly summary."); return; }
+    const html = `
+      <html><head><title>Weekly Summary</title>
+      <style>
+        body{font-family:Arial,Helvetica,sans-serif;margin:18px;color:#000;}
+        h2{margin:0 0 10px 0;}
+        .meta{margin:0 0 12px 0;font-size:11pt;}
+        table{width:100%;border-collapse:collapse;font-size:10.5pt;}
+        th,td{border:1px solid #000;padding:6px;vertical-align:top;}
+        th{background:#f0f0f0;text-align:left;}
+        pre{white-space:pre-wrap;font-size:10.5pt;line-height:1.35;}
+      </style>
+      </head><body>
+        <h2>${weeklyTitle.textContent}</h2>
+        <div class="meta">Days found: ${daysFoundEl.textContent}</div>
+        <table>${document.querySelector(".panel table").innerHTML}</table>
+        <h3 style="margin:14px 0 6px 0;">Weekly Notes</h3>
+        <pre>${(weeklyNotesEl.textContent || "").replaceAll("<","&lt;").replaceAll(">","&gt;")}</pre>
+        <script>window.print();<\/script>
+      </body></html>`;
+    w.document.open(); w.document.write(html); w.document.close();
+  }
+
+  // Events
+  saveBtn.addEventListener("click", () => save(true));
+  printBtn.addEventListener("click", () => { save(false); window.print(); });
+  printFormBtn.addEventListener("click", printFormPDF);
+  weeklyBtn.addEventListener("click", openWeeklySummary);
+
+  clearBtn.addEventListener("click", () => {
+    const ok = confirm("Clear everything for this date?");
+    if(ok) clearDay();
+  });
+
+  dateEl.addEventListener("change", () => {
+    stopActivePeriodTimer();
+    initPeriodTimers();
+    buildRows();
+    load();
+  });
+
+  document.addEventListener("change", (e) => {
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+    if(tag === "input" || tag === "textarea") save(false);
+  });
+
+  document.addEventListener("input", (e) => {
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+    if(tag === "textarea" || (tag === "input" && ["text","email","number"].includes(e.target.type))){
+      save(false);
+    }
+  });
+
+  // Focus timer presets
+  document.querySelectorAll(".preset").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const min = clampInt(btn.dataset.min, 0, 180);
+      minsEl.value = min; secsEl.value = 0;
+      resetTimer(true); save(false);
+    });
+  });
+
+  [minsEl, secsEl].forEach(el => {
+    el.addEventListener("change", () => {
+      minsEl.value = clampInt(minsEl.value, 0, 180);
+      secsEl.value = clampInt(secsEl.value, 0, 59);
+      if(!isRunning) setTimerFromInputs();
+      save(false);
+    });
+  });
+
+  purposeEl.addEventListener("input", () => { renderTimer(); save(false); });
+  startPauseBtn.addEventListener("click", toggleStartPause);
+  resetBtn.addEventListener("click", () => resetTimer());
+
+  reminderSwitch.addEventListener("click", () => setReminders(!remindersOn));
+  reminderSwitch.addEventListener("keydown", (e) => {
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      setReminders(!remindersOn);
+    }
+  });
+
+  emailBtn.addEventListener("click", openEmailDraft);
+  copyBtn.addEventListener("click", copyDailySummary);
+
+  // Weekly modal
+  document.getElementById("weeklyCloseBtn").addEventListener("click", () => weeklyModalBackdrop.classList.remove("show"));
+  weeklyModalBackdrop.addEventListener("click", (e) => {
+    if(e.target === weeklyModalBackdrop) weeklyModalBackdrop.classList.remove("show");
+  });
+  weeklyCopyBtn.addEventListener("click", copyWeeklyNotes);
+  weeklyPrintBtn.addEventListener("click", printWeekly);
+
+  // Init
+  initPeriodTimers();
+  buildRows();
+
+  // Default date = today
+  dateEl.value = ymd(new Date());
+
+  // Put your email in CC automatically
+  ccEmailEl.value = "mclem@mtpulaski.k12.il.us";
+
+  // Focus timer initial state
+  setReminders(true);
+  setTimerFromInputs();
+  load();
+
+})();
+</script>
+</body>
+</html>
